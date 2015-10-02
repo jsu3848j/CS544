@@ -2,11 +2,9 @@
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
-import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-from sklearn import metrics
 
 # read data into a DataFrame
 data = pd.read_csv('auto.csv',names=['mpg', 'cylinders', 'displacement', 'horsepower', 'weight', 'acceleration', 'model year', 'origin', 'car name'], header=None,na_values=["?"])
@@ -27,7 +25,6 @@ print lm1.score(X, y)
 
 X_new = pd.DataFrame({'displacement': [data.displacement.min(), data.displacement.max()]})
 preds = lm1.predict(X_new)
-print preds
 data.plot(kind='scatter', x='displacement', y='mpg')
 plt.plot(X_new, preds, c='red', linewidth=2)
 plt.savefig('displacement.png')
@@ -47,7 +44,6 @@ print lm2.score(X, y)
 
 X_new = pd.DataFrame({'horsepower': [data.horsepower.min(), data.horsepower.max()]})
 preds = lm2.predict(X_new)
-print preds
 data.plot(kind='scatter', x='horsepower', y='mpg')
 plt.plot(X_new, preds, c='red', linewidth=2)
 plt.savefig('horsepower.png')
@@ -63,10 +59,10 @@ lm3.fit(X, y)
 # print the coefficients
 print lm3.intercept_
 print lm3.coef_
+print lm3.score(X, y)
 
 X_new = pd.DataFrame({'weight': [data.weight.min(), data.weight.max()]})
 preds = lm3.predict(X_new)
-print preds
 data.plot(kind='scatter', x='weight', y='mpg')
 plt.plot(X_new, preds, c='red', linewidth=2)
 plt.savefig('weight.png')
@@ -82,12 +78,27 @@ lm4.fit(X, y)
 # print the coefficients
 print lm4.intercept_
 print lm4.coef_
+print lm4.score(X, y)
 
 X_new = pd.DataFrame({'acceleration': [data.acceleration.min(), data.acceleration.max()]})
 preds = lm4.predict(X_new)
-print preds
 data.plot(kind='scatter', x='acceleration', y='mpg')
 plt.plot(X_new, preds, c='red', linewidth=2)
 plt.savefig('acceleration.png')
 
-sns.pairplot(data, x_vars=['displacement','horsepower','weight','acceleration'], y_vars='mpg', size=7, aspect=0.7, kind='reg')
+#Combined
+feature_cols = ['displacement','horsepower','weight','acceleration']
+X = data[feature_cols]
+y = data.mpg
+# instantiate and fit
+lm5 = LinearRegression()
+lm5.fit(X, y)
+
+# print the coefficients
+print lm5.intercept_
+print lm5.coef_
+print lm5.score(X, y)
+
+grid = sns.pairplot(data, x_vars=['displacement','horsepower','weight','acceleration'], y_vars='mpg', kind='reg')
+grid.savefig('combined.png')
+
